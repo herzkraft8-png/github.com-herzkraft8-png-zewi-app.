@@ -1,15 +1,13 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+import { supabaseServer } from "@/lib/supabase";
 
-// Ziel des Bestätigungslinks aus der Registrierungs-Mail.
-export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code");
-
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  const weiter = url.searchParams.get("weiter") || "/app";
   if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(`${origin}/dashboard/profil`);
+    const sb = await supabaseServer();
+    await sb.auth.exchangeCodeForSession(code);
   }
-  return NextResponse.redirect(`${origin}/login`);
+  return NextResponse.redirect(new URL(weiter.startsWith("/") ? weiter : "/app", url.origin));
 }

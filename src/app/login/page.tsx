@@ -1,24 +1,17 @@
 import Link from "next/link";
-import { AuthForm } from "./auth-form";
+import { AuthForm } from "@/components/AuthForm";
+import { Logo } from "@/components/Public";
 
-export default async function LoginPage({ searchParams }: PageProps<"/login">) {
-  const { modus } = await searchParams;
-  const mode = modus === "registrieren" ? "signup" : "signin";
-
+export default async function Login({ searchParams }: { searchParams: Promise<{ weiter?: string }> }) {
+  const { weiter } = await searchParams;
   return (
-    <main className="mx-auto w-full max-w-sm px-4 py-20">
-      <Link href="/" className="text-sm text-muted">← Zewi</Link>
-      <h1 className="mt-6 text-2xl font-semibold">
-        {mode === "signup" ? "Konto erstellen" : "Einloggen"}
-      </h1>
-      <AuthForm mode={mode} />
-      <p className="mt-6 text-sm text-muted">
-        {mode === "signup" ? (
-          <>Schon ein Konto? <Link href="/login" className="text-accent">Einloggen</Link></>
-        ) : (
-          <>Noch kein Konto? <Link href="/login?modus=registrieren" className="text-accent">Registrieren</Link></>
-        )}
-      </p>
+    <main className="wrap auth">
+      <div className="card">
+        <Logo />
+        <h1 style={{ fontSize: 28 }}>Anmelden</h1>
+        <AuthForm modus="login" weiter={weiter} />
+        <p className="muted">Noch kein Konto? <Link href="/registrieren">Kostenlos starten</Link></p>
+      </div>
     </main>
   );
 }
